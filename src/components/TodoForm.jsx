@@ -16,7 +16,7 @@ export default function TodoForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 mb-8">
+    <form onSubmit={handleSubmit} className="space-y-4 mb-6 sm:mb-8">
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <input 
           type="text" 
