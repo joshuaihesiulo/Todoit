@@ -17,7 +17,7 @@ export default function TodoItem({ todo }) {
 
   return (
     <div 
-      className={`flex items-center gap-4 border-2 border-[#2D3436] p-4 rounded-3xl transition-all ${
+      className={`flex items-center gap-3 sm:gap-4 border-2 border-[#2D3436] p-3 sm:p-4 rounded-2xl sm:rounded-3xl transition-all ${
         todo.completed 
           ? 'bg-[#F9F9F9] opacity-60 text-[#B2BEC3] border-[#2D3436]/50' 
           : 'bg-white shadow-[4px_4px_0_0_#2D3436]'

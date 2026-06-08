@@ -17,24 +17,24 @@ export default function TodoForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mb-8">
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <input 
           type="text" 
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="What's next on the list?" 
-          className="flex-1 bg-[#F1F2F6] border-2 border-[#2D3436] rounded-2xl px-5 py-3.5 font-bold text-base placeholder:text-[#B2BEC3] focus:outline-none focus:ring-4 focus:ring-[#4ECDC4]/20 transition-all"
+          className="flex-1 bg-[#F1F2F6] border-2 border-[#2D3436] rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 font-bold text-sm sm:text-base placeholder:text-[#B2BEC3] focus:outline-none focus:ring-4 focus:ring-[#4ECDC4]/20 transition-all"
         />
         <button 
           type="submit"
-          className="bg-[#FF6B6B] border-2 border-[#2D3436] text-white font-black text-sm px-6 rounded-2xl shadow-[4px_4px_0_0_#2D3436] active:translate-y-1 active:shadow-none cursor-pointer transition-all flex items-center justify-center gap-1"
+          className="bg-[#FF6B6B] border-2 border-[#2D3436] text-white font-black text-sm px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl shadow-[4px_4px_0_0_#2D3436] active:translate-y-1 active:shadow-none cursor-pointer transition-all flex items-center justify-center gap-1 sm:w-auto"
         >
           <Plus size={16} strokeWidth={3} />
           ADD
         </button>
       </div>
 
-      <div className="flex items-center gap-2.5 pt-1">
+      <div className="flex items-center gap-2 pt-1 flex-wrap">
         <span className="text-[10px] font-black uppercase tracking-wider text-[#2D3436]/55 font-display">Rank Tag:</span>
         {['Urgent', 'Planning', 'Personal'].map((tName) => {
           const colors = {

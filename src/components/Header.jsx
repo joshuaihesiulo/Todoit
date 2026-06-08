@@ -7,12 +7,12 @@ export default function Header() {
   const totalCount = todos.length;
   
   return (
-    <div className="flex justify-between items-end mb-8">
-      <div>
-        <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-none mb-2">Daily Do's</h1>
-        <p className="text-[#636E72] font-semibold text-base">Stay energetic, stay busy!</p>
+    <div className="flex justify-between items-end mb-6 sm:mb-8">
+      <div className="min-w-0 flex-1 mr-3">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-none mb-1 sm:mb-2">Daily Do's</h1>
+        <p className="text-[#636E72] font-semibold text-sm sm:text-base">Stay energetic, stay busy!</p>
       </div>
-      <div className="bg-[#FFE66D] px-5 py-1.5 rounded-full border-2 border-[#2D3436] font-black text-lg shadow-[2px_2px_0_0_#2D3436]">
+      <div className="bg-[#FFE66D] px-3 sm:px-5 py-1 sm:py-1.5 rounded-full border-2 border-[#2D3436] font-black text-sm sm:text-lg shadow-[2px_2px_0_0_#2D3436] shrink-0 whitespace-nowrap">
         {String(completedCount).padStart(2, '0')} / {String(totalCount).padStart(2, '0')}
       </div>
     </div>

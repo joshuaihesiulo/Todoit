@@ -12,7 +12,7 @@ export default function FilterBar() {
   ];
 
   return (
-    <div className="flex items-center gap-2 mb-6">
+    <div className="flex items-center gap-1.5 sm:gap-2 mb-6 flex-wrap">
       <span className="text-[10px] font-black uppercase tracking-wider text-[#2D3436]/55 font-display shrink-0">
         Filter:
       </span>
