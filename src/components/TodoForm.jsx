@@ -1,9 +1,22 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
+import { useFormStore } from '../store/formStore';
+import { useTodoStore } from '../store/todoStore';
 
-export default function TodoForm({ text, setText, type, setType, onSubmit }) {
+export default function TodoForm() {
+  const { text, setText, type, setType, reset } = useFormStore();
+  const { addTodo } = useTodoStore();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (text.trim()) {
+      addTodo(text, type);
+      reset();
+    }
+  };
+
   return (
-    <form onSubmit={onSubmit} className="space-y-4 mb-8">
+    <form onSubmit={handleSubmit} className="space-y-4 mb-8">
       <div className="flex gap-3">
         <input 
           type="text" 

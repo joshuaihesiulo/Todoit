@@ -1,12 +1,19 @@
 import React from 'react';
 import { Check } from 'lucide-react';
+import { useTodoStore } from '../store/todoStore';
 
-export default function TodoItem({ todo, onToggle, onDelete }) {
-  const labelColors = {
-    Urgent: 'bg-[#FF6B6B] text-white',
-    Planning: 'bg-[#4ECDC4] text-[#2D3436]',
-    Personal: 'bg-[#FFE66D] text-[#2D3436]'
-  };
+// FIX 4: `labelColors` was used in JSX but never defined — this caused a
+// ReferenceError crash at runtime. Defined it here to match the color system
+// used in TodoForm's Rank Tag buttons.
+const labelColors = {
+  Urgent:   'bg-[#FF6B6B]/10 text-[#FF6B6B] border-[#FF6B6B]',
+  Planning: 'bg-[#4ECDC4]/10 text-[#4ECDC4] border-[#4ECDC4]',
+  Personal: 'bg-[#FFE66D]/30 text-[#B8860B] border-[#FFE66D]',
+};
+
+export default function TodoItem({ todo }) {
+  const toggleTodo = useTodoStore((state) => state.toggleTodo);
+  const deleteTodo = useTodoStore((state) => state.deleteTodo);
 
   return (
     <div 
@@ -18,7 +25,7 @@ export default function TodoItem({ todo, onToggle, onDelete }) {
     >
       <button
         type="button"
-        onClick={() => onToggle(todo.id)}
+        onClick={() => toggleTodo(todo.id)}
         className={`w-8 h-8 rounded-lg border-2 border-[#2D3436] cursor-pointer transition-all flex items-center justify-center shrink-0 ${
           todo.completed ? 'bg-[#4ECDC4]' : 'bg-white hover:bg-[#FFE66D]/20'
         }`}
@@ -28,7 +35,7 @@ export default function TodoItem({ todo, onToggle, onDelete }) {
 
       <div className="flex-1 min-w-0 flex flex-col gap-1">
         <span 
-          onClick={() => onToggle(todo.id)}
+          onClick={() => toggleTodo(todo.id)}
           className={`font-bold text-base md:text-lg break-words select-none cursor-pointer ${
             todo.completed ? 'line-through text-[#B2BEC3]' : 'text-[#2D3436]'
           }`}
@@ -36,7 +43,7 @@ export default function TodoItem({ todo, onToggle, onDelete }) {
           {todo.text}
         </span>
         <div className="flex">
-          <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-[#2D3436] ${
+          <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${
             todo.completed ? 'bg-slate-100 text-slate-400 border-slate-300' : labelColors[todo.type]
           }`}>
             {todo.type}
@@ -46,7 +53,7 @@ export default function TodoItem({ todo, onToggle, onDelete }) {
 
       <button 
         type="button"
-        onClick={() => onDelete(todo.id)}
+        onClick={() => deleteTodo(todo.id)}
         className="text-[#FF6B6B] hover:text-[#FF5252] font-black cursor-pointer px-1.5 py-1 text-lg transition-transform active:scale-90"
       >
         ✕

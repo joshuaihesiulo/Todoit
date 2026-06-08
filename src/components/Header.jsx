@@ -1,6 +1,11 @@
 import React from 'react';
+import { useTodoStore } from '../store/todoStore';
 
-export default function Header({ completedCount, totalCount }) {
+export default function Header() {
+  const todos = useTodoStore((state) => state.todos);
+  const completedCount = todos.filter(t => t.completed).length;
+  const totalCount = todos.length;
+  
   return (
     <div className="flex justify-between items-end mb-8">
       <div>
