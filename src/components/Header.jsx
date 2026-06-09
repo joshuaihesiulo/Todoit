@@ -16,7 +16,7 @@ export default function Header() {
         <p className="text-[#636E72] font-semibold text-sm sm:text-base">Stay energetic, stay busy!</p>
       </div>
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        <div className="bg-[#FFE66D] px-3 sm:px-5 py-1 sm:py-1.5 rounded-full border-2 border-[#2D3436] font-black text-sm sm:text-lg shadow-[2px_2px_0_0_#2D3436] whitespace-nowrap">
+        <div className="bg-[#FFE66D] px-3 sm:px-5 py-1 sm:py-1.5 rounded-full border-2 border-[#2D3435] font-black text-sm sm:text-lg shadow-[2px_2px_0_0_#2D3436] whitespace-nowrap">
           {String(completedCount).padStart(2, '0')} / {String(totalCount).padStart(2, '0')}
         </div>
         {isAuthenticated && (
