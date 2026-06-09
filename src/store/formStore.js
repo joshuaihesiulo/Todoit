@@ -5,5 +5,7 @@ export const useFormStore = create((set) => ({
     setText: (text) => set({text}),
     type: 'Urgent',
     setType: (type) => set({type}),
-    reset: () => set({text: '', type: 'Urgent'})
+    dueDate: '',
+    setDueDate: (dueDate) => set({dueDate}),
+    reset: () => set({text: '', type: 'Urgent', dueDate: ''})
 }))

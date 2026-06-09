@@ -1,5 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Sparkles } from 'lucide-react';
+import { DndContext, closestCorners } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
 import { useAuth } from './AuthContext';
@@ -18,6 +20,7 @@ export default function App() {
   const setTodos = useTodoStore((state) => state.setTodos);
   const clearCompleted = useTodoStore((state) => state.clearCompleted);
   const loadGuestTodos = useTodoStore((state) => state.loadGuestTodos);
+  const reorderTodos = useTodoStore((state) => state.reorderTodos);
 
   useEffect(() => {
     if (user) {
@@ -35,9 +38,37 @@ export default function App() {
   const completedCount = todos.filter(t => t.completed).length;
 
   const filter = useFilterStore((state) => state.filter);
-  const visibleTodos = filter === 'all'
+  const today = useMemo(() => new Date(new Date().toDateString()), []);
+  const isDueToday = (t) => t.dueDate && new Date(t.dueDate + 'T00:00:00').toDateString() === today.toDateString();
+
+  let visibleTodos = filter === 'all'
     ? todos
-    : todos.filter(t => t.type === filter);
+    : filter === 'due-today'
+      ? todos.filter(isDueToday)
+      : todos.filter(t => t.type === filter);
+
+  visibleTodos = [...visibleTodos].sort((a, b) => {
+    const aOverdue = !a.completed && a.dueDate && new Date(a.dueDate + 'T00:00:00') < today;
+    const bOverdue = !b.completed && b.dueDate && new Date(b.dueDate + 'T00:00:00') < today;
+    if (aOverdue && !bOverdue) return -1;
+    if (!aOverdue && bOverdue) return 1;
+    return (a.order ?? 9999) - (b.order ?? 9999);
+  });
+
+  const sortableIds = useMemo(() => visibleTodos.map(t => t.id), [visibleTodos]);
+
+  function handleDragEnd(event) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = visibleTodos.findIndex(t => t.id === active.id);
+    const newIndex = visibleTodos.findIndex(t => t.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(visibleTodos, oldIndex, newIndex);
+    const updates = reordered.map((todo, idx) => ({ id: todo.id, order: idx }));
+    reorderTodos(updates, user);
+  }
 
   return (
     <>
@@ -59,6 +90,8 @@ export default function App() {
         <FilterBar />
 
         {/* Todo List */}
+        <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
+        <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
         <div className="space-y-4 min-h-[150px]">
           {visibleTodos.map((todo) => (
             <TodoItem 
@@ -75,6 +108,8 @@ export default function App() {
             </div>
           )}
         </div>
+        </SortableContext>
+        </DndContext>
 
         {/* Footer info & action */}
         <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t-2 border-[#F1F2F6] flex flex-col sm:flex-row justify-between items-center gap-2 text-xs">

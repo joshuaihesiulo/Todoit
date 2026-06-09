@@ -5,10 +5,11 @@ export default function FilterBar() {
   const setFilter = useFilterStore((state) => state.setFilter);
 
   const filters = [
-    { label: 'All',      value: 'all',      activeClass: 'bg-[#2D3436] text-white' },
-    { label: 'Urgent',   value: 'Urgent',   activeClass: 'bg-[#FF6B6B] text-white' },
-    { label: 'Planning', value: 'Planning', activeClass: 'bg-[#4ECDC4] text-[#2D3436]' },
-    { label: 'Personal', value: 'Personal', activeClass: 'bg-[#FFE66D] text-[#2D3436]' },
+    { label: 'All',       value: 'all',       activeClass: 'bg-[#2D3436] text-white' },
+    { label: 'Due Today', value: 'due-today', activeClass: 'bg-[#FF6B6B] text-white' },
+    { label: 'Urgent',    value: 'Urgent',    activeClass: 'bg-[#FF6B6B] text-white' },
+    { label: 'Planning',  value: 'Planning',  activeClass: 'bg-[#4ECDC4] text-[#2D3436]' },
+    { label: 'Personal',  value: 'Personal',  activeClass: 'bg-[#FFE66D] text-[#2D3436]' },
   ];
 
   return (

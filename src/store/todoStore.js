@@ -5,6 +5,7 @@ import {
   deleteDoc,
   updateDoc,
   doc,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -15,16 +16,20 @@ export const useTodoStore = create((set, get) => ({
 
   setTodos: (todos) => set({ todos }),
 
-  addTodo: (text, type, user) => {
+  addTodo: (text, type, user, dueDate = '') => {
+    const existing = get().todos;
+    const maxOrder = existing.reduce((max, t) => Math.max(max, t.order ?? -1), -1);
     if (user) {
       return addDoc(collection(db, 'todos'), {
         text,
         type,
+        dueDate,
         completed: false,
         userId: user.uid,
+        order: maxOrder + 1,
       });
     }
-    const newTodo = { id: Date.now(), text, completed: false, type };
+    const newTodo = { id: Date.now(), text, completed: false, type, dueDate, order: maxOrder + 1 };
     set((state) => {
       const updated = [...state.todos, newTodo];
       localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(updated));
@@ -67,6 +72,24 @@ export const useTodoStore = create((set, get) => ({
     }
     set((state) => {
       const updated = state.todos.filter((t) => !t.completed);
+      localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(updated));
+      return { todos: updated };
+    });
+  },
+
+  reorderTodos: (updates, user) => {
+    if (user) {
+      const batch = writeBatch(db);
+      updates.forEach(({ id, order }) => {
+        batch.update(doc(db, 'todos', id), { order });
+      });
+      return batch.commit();
+    }
+    set((state) => {
+      const updated = state.todos.map((t) => {
+        const u = updates.find((u) => u.id === t.id);
+        return u ? { ...t, order: u.order } : t;
+      });
       localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(updated));
       return { todos: updated };
     });

@@ -6,13 +6,13 @@ import { useTodoStore } from '../store/todoStore';
 
 export default function TodoForm() {
   const { user } = useAuth();
-  const { text, setText, type, setType, reset } = useFormStore();
+  const { text, setText, type, setType, dueDate, setDueDate, reset } = useFormStore();
   const { addTodo } = useTodoStore();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (text.trim()) {
-      addTodo(text, type, user);
+      addTodo(text, type, user, dueDate);
       reset();
     }
   };
@@ -58,6 +58,16 @@ export default function TodoForm() {
             </button>
           );
         })}
+      </div>
+
+      <div className="flex items-center gap-2 pt-1 flex-wrap">
+        <span className="text-[10px] font-black uppercase tracking-wider text-[#2D3436]/55 font-display">Due Date:</span>
+        <input
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          className="bg-[#F1F2F6] border-2 border-[#2D3436] rounded-2xl px-3 py-1.5 text-xs font-bold text-[#2D3436] focus:outline-none focus:ring-4 focus:ring-[#4ECDC4]/20 transition-all"
+        />
       </div>
     </form>
   );
