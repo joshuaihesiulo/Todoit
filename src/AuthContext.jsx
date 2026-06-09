@@ -12,7 +12,7 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [guest, setGuest] = useState(() => localStorage.getItem('auth_guest') === 'true');
+  const [guest, setGuest] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -31,13 +31,11 @@ export function AuthProvider({ children }) {
   };
 
   const signOut = async () => {
-    localStorage.removeItem('auth_guest');
     setGuest(false);
     await firebaseSignOut(auth);
   };
 
   const continueAsGuest = () => {
-    localStorage.setItem('auth_guest', 'true');
     setGuest(true);
   };
 
