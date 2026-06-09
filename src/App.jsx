@@ -1,5 +1,6 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
+import AuthModal from './components/AuthModal';
 import Header from './components/Header';
 import TodoForm from './components/TodoForm';
 import TodoItem from './components/TodoItem';
@@ -23,7 +24,9 @@ export default function App() {
     : todos.filter(t => t.type === filter);
 
   return (
-    <div className="min-h-screen bg-[#FDFCF0] text-[#2D3436] py-6 sm:py-12 px-3 sm:px-4 flex flex-col items-center justify-center font-sans relative overflow-hidden">
+    <>
+      <AuthModal />
+      <div className="min-h-screen bg-[#FDFCF0] text-[#2D3436] py-6 sm:py-12 px-3 sm:px-4 flex flex-col items-center justify-center font-sans relative overflow-hidden">
       {/* Background ambient decorative shapes from styling sheet */}
       <div className="absolute top-[-50px] left-[-50px] w-64 h-64 bg-[#FFE66D] rounded-full opacity-60 blur-3xl pointer-events-none hidden sm:block"></div>
       <div className="absolute bottom-[-80px] right-[-80px] w-96 h-96 bg-[#4ECDC4] rounded-full opacity-40 blur-3xl pointer-events-none hidden sm:block"></div>
@@ -76,5 +79,6 @@ export default function App() {
       {/* Legend Component */}
       <TodoLegend />
     </div>
+    </>
   );
 }
