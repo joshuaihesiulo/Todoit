@@ -11,7 +11,7 @@ export default function Header() {
   
   return (
     <div className="flex justify-between items-end mb-6 sm:mb-8">
-      <div className="min-w-0 flex-1 mr-3">
+      <div className="min-w-0 flex-1 mr-4">
         <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-none mb-1 sm:mb-2">Daily Do's</h1>
         <p className="text-[#636E72] font-semibold text-sm sm:text-base">Stay energetic, stay busy!</p>
       </div>
