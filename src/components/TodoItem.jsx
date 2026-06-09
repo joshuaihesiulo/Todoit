@@ -1,5 +1,6 @@
 import React from 'react';
 import { Check } from 'lucide-react';
+import { useAuth } from '../AuthContext';
 import { useTodoStore } from '../store/todoStore';
 
 // FIX 4: `labelColors` was used in JSX but never defined — this caused a
@@ -12,6 +13,7 @@ const labelColors = {
 };
 
 export default function TodoItem({ todo }) {
+  const { user } = useAuth();
   const toggleTodo = useTodoStore((state) => state.toggleTodo);
   const deleteTodo = useTodoStore((state) => state.deleteTodo);
 
@@ -25,7 +27,7 @@ export default function TodoItem({ todo }) {
     >
       <button
         type="button"
-        onClick={() => toggleTodo(todo.id)}
+        onClick={() => toggleTodo(todo.id, user)}
         className={`w-8 h-8 rounded-lg border-2 border-[#2D3436] cursor-pointer transition-all flex items-center justify-center shrink-0 ${
           todo.completed ? 'bg-[#4ECDC4]' : 'bg-white hover:bg-[#FFE66D]/20'
         }`}
@@ -35,7 +37,7 @@ export default function TodoItem({ todo }) {
 
       <div className="flex-1 min-w-0 flex flex-col gap-1">
         <span 
-          onClick={() => toggleTodo(todo.id)}
+          onClick={() => toggleTodo(todo.id, user)}
           className={`font-bold text-base md:text-lg break-words select-none cursor-pointer ${
             todo.completed ? 'line-through text-[#B2BEC3]' : 'text-[#2D3436]'
           }`}
@@ -53,7 +55,7 @@ export default function TodoItem({ todo }) {
 
       <button 
         type="button"
-        onClick={() => deleteTodo(todo.id)}
+        onClick={() => deleteTodo(todo.id, user)}
         className="text-[#FF6B6B] hover:text-[#FF5252] font-black cursor-pointer px-1.5 py-1 text-lg transition-transform active:scale-90"
       >
         ✕

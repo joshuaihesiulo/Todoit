@@ -24,19 +24,33 @@ export default function AuthModal() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  if (loading || isAuthenticated) return null;
+  if (isAuthenticated) return null;
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-[#FDFCF0] rounded-[32px] border-4 border-[#2D3436] p-8 shadow-[0_32px_0_0_#FF6B6B]">
+          <div className="w-10 h-10 border-4 border-[#FF6B6B] border-t-transparent rounded-full animate-spin mx-auto" />
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
     setSubmitting(true);
     try {
       if (tab === 'signin') {
         await signIn(email, password);
       } else {
         await signUp(email, password);
+        setTab('signin');
+        setSuccessMessage('Account created successfully! Please sign in.');
       }
     } catch (err) {
       setError(getErrorMessage(err));
@@ -47,9 +61,14 @@ export default function AuthModal() {
 
   const handleGoogle = async () => {
     setError('');
+    setSuccessMessage('');
     setSubmitting(true);
     try {
-      await signInWithGoogle();
+      const result = await signInWithGoogle();
+      if (result?.registered) {
+        setTab('signin');
+        setSuccessMessage('Google account created! Please sign in with Google.');
+      }
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {
         setError(getErrorMessage(err));
@@ -61,6 +80,7 @@ export default function AuthModal() {
 
   const handleGuest = () => {
     setError('');
+    setSuccessMessage('');
     continueAsGuest();
   };
 
@@ -77,7 +97,7 @@ export default function AuthModal() {
             <button
               key={t}
               type="button"
-              onClick={() => { setTab(t); setError(''); }}
+              onClick={() => { setTab(t); setError(''); setSuccessMessage(''); }}
               className={`flex-1 py-2 rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer transition-all ${
                 tab === t
                   ? 'bg-white text-[#2D3436] shadow-[2px_2px_0_0_#2D3436] border border-[#2D3436]'
@@ -124,6 +144,12 @@ export default function AuthModal() {
           {error && (
             <div className="bg-[#FF6B6B]/10 border-2 border-[#FF6B6B] rounded-2xl px-4 py-2.5">
               <p className="text-xs font-bold text-[#FF6B6B]">{error}</p>
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="bg-[#4ECDC4]/10 border-2 border-[#4ECDC4] rounded-2xl px-4 py-2.5">
+              <p className="text-xs font-bold text-[#4ECDC4]">{successMessage}</p>
             </div>
           )}
 

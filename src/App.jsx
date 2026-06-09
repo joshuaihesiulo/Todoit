@@ -1,5 +1,8 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { Sparkles } from 'lucide-react';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { db } from './firebase';
+import { useAuth } from './AuthContext';
 import AuthModal from './components/AuthModal';
 import Header from './components/Header';
 import TodoForm from './components/TodoForm';
@@ -7,16 +10,29 @@ import TodoItem from './components/TodoItem';
 import TodoLegend from './components/TodoLegend';
 import FilterBar from './components/FilterBar';
 import { useTodoStore } from './store/todoStore';
-import { useFilterStore } from './store/filterStore'; // FIX 1: was missing — caused crash
+import { useFilterStore } from './store/filterStore';
 
 export default function App() {
+  const { user } = useAuth();
   const todos = useTodoStore((state) => state.todos);
+  const setTodos = useTodoStore((state) => state.setTodos);
   const clearCompleted = useTodoStore((state) => state.clearCompleted);
+  const loadGuestTodos = useTodoStore((state) => state.loadGuestTodos);
+
+  useEffect(() => {
+    if (user) {
+      const q = query(collection(db, 'todos'), where('userId', '==', user.uid));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setTodos(items);
+      });
+      return unsubscribe;
+    }
+    loadGuestTodos();
+  }, [user]);
+
   const activeCount = todos.filter(t => !t.completed).length;
   const completedCount = todos.filter(t => t.completed).length;
-
-  // FIX 2: removed `const addTodo = useTodoStore(...)` — it was unused.
-  // TodoForm reads addTodo from the store directly (Part 4 complete).
 
   const filter = useFilterStore((state) => state.filter);
   const visibleTodos = filter === 'all'
@@ -67,7 +83,7 @@ export default function App() {
           </div>
           {completedCount > 0 && (
             <button 
-              onClick={clearCompleted}
+              onClick={() => clearCompleted(user)}
               className="text-[#FF6B6B] hover:text-[#FF5252] font-black uppercase tracking-widest transition-colors cursor-pointer"
             >
               Clear Completed

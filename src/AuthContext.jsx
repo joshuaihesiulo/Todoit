@@ -12,31 +12,44 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [guest, setGuest] = useState(false);
+  const [guest, setGuest] = useState(() => localStorage.getItem('guest_mode') === 'true');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
+      if (firebaseUser) {
+        localStorage.removeItem('guest_mode');
+      }
     });
     return unsubscribe;
   }, []);
 
-  const signUp = (email, password) => createUserWithEmailAndPassword(auth, email, password);
+  const signUp = async (email, password) => {
+    await createUserWithEmailAndPassword(auth, email, password);
+    await firebaseSignOut(auth);
+  };
   const signIn = (email, password) => signInWithEmailAndPassword(auth, email, password);
 
   const signInWithGoogle = async () => {
     const result = await firebaseGoogleSignIn();
-    return result;
+    const isNewUser = result?.additionalUserInfo?.isNewUser;
+    if (isNewUser) {
+      await firebaseSignOut(auth);
+      return { registered: true };
+    }
+    return { registered: false };
   };
 
   const signOut = async () => {
     setGuest(false);
+    localStorage.removeItem('guest_mode');
     await firebaseSignOut(auth);
   };
 
   const continueAsGuest = () => {
     setGuest(true);
+    localStorage.setItem('guest_mode', 'true');
   };
 
   const isAuthenticated = !!(user || guest);

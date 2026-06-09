@@ -1,16 +1,18 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
+import { useAuth } from '../AuthContext';
 import { useFormStore } from '../store/formStore';
 import { useTodoStore } from '../store/todoStore';
 
 export default function TodoForm() {
+  const { user } = useAuth();
   const { text, setText, type, setType, reset } = useFormStore();
   const { addTodo } = useTodoStore();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (text.trim()) {
-      addTodo(text, type);
+      addTodo(text, type, user);
       reset();
     }
   };
