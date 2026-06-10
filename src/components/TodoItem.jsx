@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Check, GripVertical } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -18,6 +18,41 @@ export default function TodoItem({ todo }) {
   const { user } = useAuth();
   const toggleTodo = useTodoStore((state) => state.toggleTodo);
   const deleteTodo = useTodoStore((state) => state.deleteTodo);
+  const updateTodo = useTodoStore((state) => state.updateTodo);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(todo.text);
+  const [editType, setEditType] = useState(todo.type);
+  const editRef = useRef(null);
+
+  const startEditing = () => {
+    setEditText(todo.text);
+    setEditType(todo.type);
+    setIsEditing(true);
+  };
+
+  const saveEdit = () => {
+    if (editText.trim() && (editText.trim() !== todo.text || editType !== todo.type)) {
+      updateTodo(todo.id, { text: editText.trim(), type: editType }, user);
+    }
+    setIsEditing(false);
+  };
+
+  const cancelEdit = () => {
+    setEditText(todo.text);
+    setEditType(todo.type);
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') saveEdit();
+    if (e.key === 'Escape') cancelEdit();
+  };
+
+  const handleBlur = (e) => {
+    if (editRef.current?.contains(e.relatedTarget)) return;
+    saveEdit();
+  };
 
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: todo.id,
@@ -75,26 +110,67 @@ export default function TodoItem({ todo }) {
       </button>
 
       <div className="flex-1 min-w-0 flex flex-col gap-1">
-        <span 
-          onClick={() => toggleTodo(todo.id, user)}
-          className={`font-bold text-base md:text-lg break-words select-none cursor-pointer ${
-            todo.completed ? 'line-through text-[#B2BEC3]' : 'text-[#2D3436]'
-          }`}
-        >
-          {todo.text}
-        </span>
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-            todo.completed ? 'bg-slate-100 text-slate-400 border-slate-300' : labelColors[todo.type]
-          }`}>
-            {todo.type}
-          </span>
-          {todo.dueDate && (
-            <span className={`text-[9px] font-black tracking-wider ${isOverdue && !todo.completed ? 'text-[#FF6B6B]' : 'text-[#636E72]'}`}>
-              {formatDueDate(todo.dueDate)}
+        {isEditing ? (
+          <div ref={editRef} className="flex flex-col gap-2" onBlur={handleBlur}>
+            <input
+              type="text"
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoFocus
+              className="bg-[#F1F2F6] border-2 border-[#2D3436] rounded-2xl px-4 py-2 font-bold text-sm text-[#2D3436] placeholder:text-[#B2BEC3] focus:outline-none focus:ring-4 focus:ring-[#4ECDC4]/20 transition-all"
+            />
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {['Urgent', 'Planning', 'Personal'].map((tName) => {
+                const colors = {
+                  Urgent: 'bg-[#FF6B6B] text-white',
+                  Planning: 'bg-[#4ECDC4] text-[#2D3436]',
+                  Personal: 'bg-[#FFE66D] text-[#2D3436]'
+                };
+                const isSelected = editType === tName;
+                return (
+                  <button
+                    key={tName}
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => setEditType(tName)}
+                    className={`px-2.5 py-0.5 rounded-full text-[9px] font-black border-2 border-[#2D3436] cursor-pointer transition-all ${
+                      isSelected
+                        ? `${colors[tName]} shadow-[2px_2px_0_0_#2D3436]`
+                        : 'bg-white text-[#2D3436]/60 hover:bg-slate-50'
+                    }`}
+                  >
+                    {tName}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <>
+            <span
+              onDoubleClick={startEditing}
+              onClick={() => toggleTodo(todo.id, user)}
+              className={`font-bold text-base md:text-lg break-words select-none cursor-pointer ${
+                todo.completed ? 'line-through text-[#B2BEC3]' : 'text-[#2D3436]'
+              }`}
+            >
+              {todo.text}
             </span>
-          )}
-        </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                todo.completed ? 'bg-slate-100 text-slate-400 border-slate-300' : labelColors[todo.type]
+              }`}>
+                {todo.type}
+              </span>
+              {todo.dueDate && (
+                <span className={`text-[9px] font-black tracking-wider ${isOverdue && !todo.completed ? 'text-[#FF6B6B]' : 'text-[#636E72]'}`}>
+                  {formatDueDate(todo.dueDate)}
+                </span>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       <button 

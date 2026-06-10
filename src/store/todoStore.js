@@ -65,6 +65,19 @@ export const useTodoStore = create((set, get) => ({
     });
   },
 
+  updateTodo: (id, fields, user) => {
+    if (user) {
+      return updateDoc(doc(db, 'todos', id), fields);
+    }
+    set((state) => {
+      const updated = state.todos.map((t) =>
+        t.id === id ? { ...t, ...fields } : t
+      );
+      localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(updated));
+      return { todos: updated };
+    });
+  },
+
   clearCompleted: (user) => {
     if (user) {
       const completed = get().todos.filter((t) => t.completed);
