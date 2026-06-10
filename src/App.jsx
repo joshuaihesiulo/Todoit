@@ -11,10 +11,13 @@ import TodoForm from './components/TodoForm';
 import TodoItem from './components/TodoItem';
 import TodoLegend from './components/TodoLegend';
 import FilterBar from './components/FilterBar';
+import ToastNotification from './components/ToastNotification';
 import { useTodoStore } from './store/todoStore';
 import { useFilterStore } from './store/filterStore';
+import useNotifications from './hooks/useNotifications';
 
 export default function App() {
+  const { toasts, removeToast } = useNotifications();
   const { user } = useAuth();
   const todos = useTodoStore((state) => state.todos);
   const setTodos = useTodoStore((state) => state.setTodos);
@@ -130,6 +133,10 @@ export default function App() {
       {/* Legend Component */}
       <TodoLegend />
     </div>
+
+      {toasts.map((t) => (
+        <ToastNotification key={t.id} toast={t} onRemove={removeToast} />
+      ))}
     </>
   );
 }
